@@ -7,5 +7,6 @@ namespace BookMyShow.Repository.Interfaces
         Task<CinemaDto>AddCinema(CinemaDto cinema, int id);
         Task<IEnumerable<CinemaWithShowsDto>> GetShows(int id);
         Task<List<SeatDto>> GetShowSeats(int showId);
+        Task<List<AdminShowDto>> GetAdminShows(int id);
     }
 }

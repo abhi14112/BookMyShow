@@ -65,7 +65,7 @@ namespace BookMyShow.Repository.Services
                 .Where(c => c.OwnerId == id)
                 .Select(c => new CinemaDto
                 {
-                    
+                    Id = c.Id,
                     Name = c.Name,
                     Location = c.Location
                 }).ToListAsync();
@@ -81,6 +81,18 @@ namespace BookMyShow.Repository.Services
             _context.Cinemas.Add(newCinema);
             await _context.SaveChangesAsync();
             return cinema;
+        }
+        public async Task<List<AdminShowDto>>GetAdminShows(int id)
+        {
+           var shows =  await _context.Shows.Where(s => s.Cinema.Id == id)
+                .Select(s => new AdminShowDto
+                {
+                    Id = s.Id,
+                    StartDate = s.StartDate,
+                    EndDate = s.EndDate,
+                    MovieTitle = s.Movie.Title
+                }).ToListAsync();
+            return shows;
         }
     }
 }

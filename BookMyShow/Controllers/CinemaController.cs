@@ -19,6 +19,12 @@ namespace BookMyShow.Controllers
             var seats = await _cinemaService.GetShowSeats(id);
             return Ok(seats);
         }
+        [HttpGet("GetAdminShows/{id}")]
+        public async Task<IActionResult>GetAdminShows(int id)
+        {
+            var result = await _cinemaService.GetAdminShows(id);
+            return Ok(result);
+        }
         [HttpGet("GetShows/{id}")]
         public async Task<IActionResult> GetShows(int id)
         {
