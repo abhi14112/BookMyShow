@@ -13,7 +13,6 @@ namespace BookMyShow.Repository.Services
         {
             _context = context;
         }
-        
         public async Task<MovieDto> AddMovie(MovieDto movie)
         {
             var newMovie = new Movie

@@ -13,6 +13,12 @@ namespace BookMyShow.Controllers
         {
             _cinemaService = cinemaService;
         }
+        [HttpGet("GetShowDetails/{id}")]
+        public async Task<IActionResult>GetShowDetails(int id)
+        {
+            var result = await _cinemaService.GetShowDetails(id);
+            return Ok(result);
+        }
         [HttpGet("GetShowSeats/{id}")]
         public async Task<IActionResult>GetShowSeats(int id)
         {
@@ -39,10 +45,10 @@ namespace BookMyShow.Controllers
         }
 
         [HttpPost("AddCinema/{id}")]
-        public async Task<IActionResult>AddCinema( [FromBody]CinemaDto cinema, int id)
+        public async Task<IActionResult>AddCinema( [FromBody]AddCinemaDto cinema, int id)
         {
-           var result = await  _cinemaService.AddCinema(cinema, id);
-            return Ok(result);
+            await  _cinemaService.AddCinema(cinema, id);
+            return Ok("Cinema Added");
         }
     }
 }

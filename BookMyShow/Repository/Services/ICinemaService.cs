@@ -3,7 +3,6 @@ using BookMyShow.DTO;
 using BookMyShow.Models;
 using BookMyShow.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
 namespace BookMyShow.Repository.Services
 {
     public class CinemaRepository:ICinemaRepository
@@ -32,8 +31,17 @@ namespace BookMyShow.Repository.Services
                     }).ToList()
                 })
                 .ToListAsync();
-
             return seats;
+        }
+        public async Task AddShowData(AddShowDto show, int id)
+        {
+            var showData = new Show
+            {
+                StartDate = show.StartDate,
+                EndDate = show.EndDate,
+                TicketPrice = show.TicketPrice,
+                
+            };
         }
         public async Task<IEnumerable<CinemaWithShowsDto>> GetShows(int movieId)
         {
@@ -59,6 +67,19 @@ namespace BookMyShow.Repository.Services
 
             return cinemas;
         }
+        public async Task<ShowDetailsDto> GetShowDetails(int id)
+        {
+            var result = await _context.Shows.Where(s => s.Id == id)
+                .Select(s => new ShowDetailsDto
+                {
+                    Id = s.Id,
+                    StartDate = s.StartDate,
+                    EndDate = s.EndDate,
+                    TicketPrice = s.TicketPrice,
+                    TotalSeats = s.Seats.Count
+                }).FirstOrDefaultAsync();
+            return result;
+        }
         public async Task<IEnumerable<CinemaDto>> GetCinemas(int id)
         {
             return await _context.Cinemas
@@ -70,7 +91,7 @@ namespace BookMyShow.Repository.Services
                     Location = c.Location
                 }).ToListAsync();
         }
-        public async Task<CinemaDto>AddCinema(CinemaDto cinema,int id)
+        public async Task AddCinema(AddCinemaDto cinema,int id)
         {
             var newCinema = new Cinema
             {
@@ -80,7 +101,6 @@ namespace BookMyShow.Repository.Services
             };
             _context.Cinemas.Add(newCinema);
             await _context.SaveChangesAsync();
-            return cinema;
         }
         public async Task<List<AdminShowDto>>GetAdminShows(int id)
         {
