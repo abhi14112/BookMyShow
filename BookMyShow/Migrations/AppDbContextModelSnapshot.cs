@@ -53,6 +53,60 @@ namespace BookMyShow.Migrations
                     b.ToTable("Addresses");
                 });
 
+            modelBuilder.Entity("BookMyShow.Models.Booking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BookingTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CinemaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShowId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CinemaId");
+
+                    b.HasIndex("ShowId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("BookMyShow.Models.BookingSeat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeatId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("SeatId");
+
+                    b.ToTable("BookingSeats");
+                });
+
             modelBuilder.Entity("BookMyShow.Models.Cinema", b =>
                 {
                     b.Property<int>("Id")
@@ -159,14 +213,9 @@ namespace BookMyShow.Migrations
                     b.Property<int>("ShowId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserSeatsId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ShowId");
-
-                    b.HasIndex("UserSeatsId");
 
                     b.ToTable("Seats");
                 });
@@ -235,34 +284,6 @@ namespace BookMyShow.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BookMyShow.Models.UserSeats", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CinemaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ShowId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CinemaId");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("ShowId");
-
-                    b.ToTable("UserSeats");
-                });
-
             modelBuilder.Entity("BookMyShow.Models.Address", b =>
                 {
                     b.HasOne("BookMyShow.Models.User", "User")
@@ -272,6 +293,52 @@ namespace BookMyShow.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BookMyShow.Models.Booking", b =>
+                {
+                    b.HasOne("BookMyShow.Models.Cinema", "Cinema")
+                        .WithMany()
+                        .HasForeignKey("CinemaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookMyShow.Models.Show", "Show")
+                        .WithMany()
+                        .HasForeignKey("ShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookMyShow.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cinema");
+
+                    b.Navigation("Show");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BookMyShow.Models.BookingSeat", b =>
+                {
+                    b.HasOne("BookMyShow.Models.Booking", "Booking")
+                        .WithMany("BookingSeats")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookMyShow.Models.Seat", "Seat")
+                        .WithMany()
+                        .HasForeignKey("SeatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Seat");
                 });
 
             modelBuilder.Entity("BookMyShow.Models.PersonalDetails", b =>
@@ -292,10 +359,6 @@ namespace BookMyShow.Migrations
                         .HasForeignKey("ShowId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("BookMyShow.Models.UserSeats", null)
-                        .WithMany("Seats")
-                        .HasForeignKey("UserSeatsId");
 
                     b.Navigation("Show");
                 });
@@ -319,31 +382,9 @@ namespace BookMyShow.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("BookMyShow.Models.UserSeats", b =>
+            modelBuilder.Entity("BookMyShow.Models.Booking", b =>
                 {
-                    b.HasOne("BookMyShow.Models.Cinema", "Cinema")
-                        .WithMany()
-                        .HasForeignKey("CinemaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookMyShow.Models.Movie", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookMyShow.Models.Show", "Show")
-                        .WithMany()
-                        .HasForeignKey("ShowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cinema");
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("Show");
+                    b.Navigation("BookingSeats");
                 });
 
             modelBuilder.Entity("BookMyShow.Models.Cinema", b =>
@@ -361,11 +402,6 @@ namespace BookMyShow.Migrations
                     b.Navigation("Address");
 
                     b.Navigation("PersonalDetails");
-                });
-
-            modelBuilder.Entity("BookMyShow.Models.UserSeats", b =>
-                {
-                    b.Navigation("Seats");
                 });
 #pragma warning restore 612, 618
         }

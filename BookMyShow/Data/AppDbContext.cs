@@ -12,7 +12,8 @@ namespace BookMyShow.Data
         public DbSet<Cinema> Cinemas { get; set; }
         public DbSet<Show> Shows { get; set; }
         public DbSet<Seat> Seats { get; set; }
-        public DbSet<UserSeats> UserSeats { get; set; }
+        public DbSet<Booking>Bookings { get; set; }
+        public DbSet<BookingSeat>BookingSeats { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,20 +46,17 @@ namespace BookMyShow.Data
             modelBuilder.Entity<PersonalDetails>()
                 .Property(p => p.Gender)
                 .HasConversion<string>();
-            modelBuilder.Entity<UserSeats>()
-               .HasOne(us => us.Cinema)
-               .WithMany()
-               .HasForeignKey(us => us.CinemaId);
+            modelBuilder.Entity<BookingSeat>()
+                .HasOne(bs => bs.Booking)
+                .WithMany(b => b.BookingSeats)
+                .HasForeignKey(bs => bs.BookingId);
 
-            modelBuilder.Entity<UserSeats>()
-                .HasOne(us => us.Movie)
+            modelBuilder.Entity<BookingSeat>()
+                .HasOne(b => b.Seat)
                 .WithMany()
-                .HasForeignKey(us => us.MovieId);
+                .HasForeignKey(bs => bs.SeatId);
 
-            modelBuilder.Entity<UserSeats>()
-                .HasOne(us => us.Show)
-                .WithMany()
-                .HasForeignKey(us => us.ShowId);
+
         }
     }
 }

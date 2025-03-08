@@ -13,6 +13,18 @@ namespace BookMyShow.Controllers
         {
             _cinemaService = cinemaService;
         }
+        [HttpGet("Bookings/{id}")]
+        public async Task<IActionResult>GetBookings(int id)
+        {
+            var result = await _cinemaService.GetBooking(id);
+            return Ok(result);
+        }
+        [HttpGet("Bookings")]
+        public async Task<IActionResult>GetAllBookings()
+        {
+            var result = await _cinemaService.GetAllBooking();
+            return Ok(result);
+        }
         [HttpPost("BookSeats")]
         public async Task<IActionResult> BookSeats([FromBody]SeatIdDto ids)
         {

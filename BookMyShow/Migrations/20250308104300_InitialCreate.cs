@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -69,8 +69,8 @@ namespace BookMyShow.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MovieId = table.Column<int>(type: "int", nullable: true),
-                    CinemaId = table.Column<int>(type: "int", nullable: true),
+                    MovieId = table.Column<int>(type: "int", nullable: false),
+                    CinemaId = table.Column<int>(type: "int", nullable: false),
                     TicketPrice = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -80,7 +80,8 @@ namespace BookMyShow.Migrations
                         name: "FK_Shows_Cinemas_CinemaId",
                         column: x => x.CinemaId,
                         principalTable: "Cinemas",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Shows_Movies_MovieId",
                         column: x => x.MovieId,
@@ -136,6 +137,40 @@ namespace BookMyShow.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CinemaId = table.Column<int>(type: "int", nullable: false),
+                    ShowId = table.Column<int>(type: "int", nullable: false),
+                    BookingTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Cinemas_CinemaId",
+                        column: x => x.CinemaId,
+                        principalTable: "Cinemas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Shows_ShowId",
+                        column: x => x.ShowId,
+                        principalTable: "Shows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Seats",
                 columns: table => new
                 {
@@ -158,11 +193,62 @@ namespace BookMyShow.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "BookingSeats",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookingId = table.Column<int>(type: "int", nullable: false),
+                    SeatId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingSeats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BookingSeats_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BookingSeats_Seats_SeatId",
+                        column: x => x.SeatId,
+                        principalTable: "Seats",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_UserId",
                 table: "Addresses",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_CinemaId",
+                table: "Bookings",
+                column: "CinemaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_ShowId",
+                table: "Bookings",
+                column: "ShowId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_UserId",
+                table: "Bookings",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingSeats_BookingId",
+                table: "BookingSeats",
+                column: "BookingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingSeats_SeatId",
+                table: "BookingSeats",
+                column: "SeatId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersonalDetails_UserId",
@@ -193,7 +279,13 @@ namespace BookMyShow.Migrations
                 name: "Addresses");
 
             migrationBuilder.DropTable(
+                name: "BookingSeats");
+
+            migrationBuilder.DropTable(
                 name: "PersonalDetails");
+
+            migrationBuilder.DropTable(
+                name: "Bookings");
 
             migrationBuilder.DropTable(
                 name: "Seats");

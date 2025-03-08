@@ -2,6 +2,7 @@
 using BookMyShow.DTO;
 using BookMyShow.Models;
 using BookMyShow.Repository.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 namespace BookMyShow.Repository.Services
 {
@@ -12,7 +13,64 @@ namespace BookMyShow.Repository.Services
         {
             _context = context;
         }
-           public async Task<List<SeatDto>> GetShowSeats(int showId)
+
+        public async Task<List<BookingDto>> GetAllBooking()
+        {
+            var userBookings = await _context.Bookings
+                .Select(b => new BookingDto
+                {
+                    Id = b.Id,
+                    BookingTime = b.BookingTime,
+                    Show = new BookingShowDto
+                    {
+                        Id = b.Show.Id,
+                        Title = b.Show.Movie.Title,
+                        StartTime = b.Show.StartDate
+                    },
+                    Cinema = new BookingCinemaDto
+                    {
+                        Id = b.Cinema.Id,
+                        Name = b.Cinema.Name
+                    },
+                    Seats = b.BookingSeats.Select(bs => new BookingSeatDto
+                    {
+                        Id = bs.Seat.Id,
+                        SeatNumber = bs.Seat.Row + bs.Seat.Columns
+                    }).ToList()
+                })
+                .ToListAsync(); 
+
+            return userBookings;
+        }public async Task<List<BookingDto>> GetBooking(int userId)
+        {
+            var userBookings = await _context.Bookings
+                .Where(b => b.UserId == userId)
+                .Select(b => new BookingDto
+                {
+                    Id = b.Id,
+                    BookingTime = b.BookingTime,
+                    Show = new BookingShowDto
+                    {
+                        Id = b.Show.Id,
+                        Title = b.Show.Movie.Title,
+                        StartTime = b.Show.StartDate
+                    },
+                    Cinema = new BookingCinemaDto
+                    {
+                        Id = b.Cinema.Id,
+                        Name = b.Cinema.Name
+                    },
+                    Seats = b.BookingSeats.Select(bs => new BookingSeatDto
+                    {
+                        Id = bs.Seat.Id,
+                        SeatNumber = bs.Seat.Row + bs.Seat.Columns
+                    }).ToList()
+                })
+                .ToListAsync(); 
+
+            return userBookings;
+        }
+        public async Task<List<SeatDto>> GetShowSeats(int showId)
            {
             var seats = await _context.Seats
                 .Where(s => s.ShowId == showId)  
@@ -151,13 +209,25 @@ namespace BookMyShow.Repository.Services
             return shows;
         }
          
-        public async Task BookSeats(SeatIdDto ids)
+        public async Task BookSeats(SeatIdDto data)
         {
-            var seats = _context.Seats.Where(s => ids.Ids.Contains(s.Id)).ToList();
+            var seats = _context.Seats.Where(s => data.Ids.Contains(s.Id)).ToList();
             foreach(var seat in seats)
             {
                 seat.SeatStatus = (SeatStatus)1;
             }
+            var booking = new Booking
+            {
+                UserId = data.UserId,
+                ShowId = data.ShowId,
+                CinemaId = data.CinemaId,
+                BookingTime = DateTime.UtcNow,
+                BookingSeats = data.Ids.Select(seatId => new BookingSeat
+                {
+                    SeatId = seatId,
+                }).ToList()
+            };
+            _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
         }
     }
