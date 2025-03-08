@@ -7,5 +7,6 @@
         public int TotalSeats { get; set; }
         public int TicketPrice { get; set; }
         public int MovieId { get; set; }
+        public int CinemaId { get; set; }
     }
 }

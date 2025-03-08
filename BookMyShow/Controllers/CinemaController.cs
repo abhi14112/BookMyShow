@@ -13,6 +13,12 @@ namespace BookMyShow.Controllers
         {
             _cinemaService = cinemaService;
         }
+        [HttpPost("BookSeats")]
+        public async Task<IActionResult> BookSeats([FromBody]SeatIdDto ids)
+        {
+            await _cinemaService.BookSeats(ids);
+            return Ok("Seats booked");
+        }
         [HttpGet("GetShowDetails/{id}")]
         public async Task<IActionResult>GetShowDetails(int id)
         {
@@ -42,6 +48,22 @@ namespace BookMyShow.Controllers
         {
             var cinemas = await _cinemaService.GetCinemas(id);
             return Ok(cinemas);
+        }
+        [HttpPost("AddShow/{id}")]
+        public async Task<IActionResult> AddShow([FromBody] AddShowDto showData, int id)
+        {
+            try
+            {
+                if (showData == null)
+                    return BadRequest("Invalid show data.");
+
+                await _cinemaService.AddShowData(showData, id);
+                return Ok(new { message = "Show data added successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Internal Server Error", details = ex.Message });
+            }
         }
 
         [HttpPost("AddCinema/{id}")]

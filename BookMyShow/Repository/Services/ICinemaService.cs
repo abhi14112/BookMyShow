@@ -25,6 +25,7 @@ namespace BookMyShow.Repository.Services
                     ShowId = showId,
                     Columns = g.Select(s => new ColumnsDto
                     {
+                        Id = s.Id,
                         Column = s.Columns,
                         SeatStatus = s.SeatStatus,
                         SeatType = s.SeatType
@@ -35,13 +36,48 @@ namespace BookMyShow.Repository.Services
         }
         public async Task AddShowData(AddShowDto show, int id)
         {
-            var showData = new Show
+            try
             {
-                StartDate = show.StartDate,
-                EndDate = show.EndDate,
-                TicketPrice = show.TicketPrice,
-                
-            };
+                var showData = new Show
+                {
+                    CinemaId = id,
+                    MovieId = show.MovieId,
+                    TicketPrice = show.TicketPrice,
+                    StartDate = show.StartDate,
+                    EndDate = show.EndDate
+                };
+
+                _context.Shows.Add(showData);
+                await _context.SaveChangesAsync();
+
+                int rows = (int)Math.Ceiling((double)show.TotalSeats / 15);
+                string[] rowData = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L" };
+
+                List<Seat> seats = new List<Seat>();
+
+                for (int i = 0; i < rows; i++)
+                {
+                    int columns = (i == rows - 1 && show.TotalSeats % 15 > 0) ? show.TotalSeats % 15 : 15;
+
+                    for (int j = 1; j <= columns; j++)
+                    {
+                        seats.Add(new Seat
+                        {
+                            Row = rowData[i],
+                            Columns = j,
+                            ShowId = showData.Id,
+                            SeatStatus = SeatStatus.AVAILABLE,
+                            SeatType = SeatType.NORMAL
+                        });
+                    }
+                }
+                _context.Seats.AddRange(seats);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error adding show data: " + ex.Message);
+            }
         }
         public async Task<IEnumerable<CinemaWithShowsDto>> GetShows(int movieId)
         {
@@ -113,6 +149,16 @@ namespace BookMyShow.Repository.Services
                     MovieTitle = s.Movie.Title
                 }).ToListAsync();
             return shows;
+        }
+         
+        public async Task BookSeats(SeatIdDto ids)
+        {
+            var seats = _context.Seats.Where(s => ids.Ids.Contains(s.Id)).ToList();
+            foreach(var seat in seats)
+            {
+                seat.SeatStatus = (SeatStatus)1;
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

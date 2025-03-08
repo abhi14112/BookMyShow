@@ -4,6 +4,7 @@ using BookMyShow.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookMyShow.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250307045004_showUpdated")]
+    partial class showUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,14 +162,9 @@ namespace BookMyShow.Migrations
                     b.Property<int>("ShowId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserSeatsId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ShowId");
-
-                    b.HasIndex("UserSeatsId");
 
                     b.ToTable("Seats");
                 });
@@ -235,34 +233,6 @@ namespace BookMyShow.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BookMyShow.Models.UserSeats", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CinemaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ShowId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CinemaId");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("ShowId");
-
-                    b.ToTable("UserSeats");
-                });
-
             modelBuilder.Entity("BookMyShow.Models.Address", b =>
                 {
                     b.HasOne("BookMyShow.Models.User", "User")
@@ -293,10 +263,6 @@ namespace BookMyShow.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookMyShow.Models.UserSeats", null)
-                        .WithMany("Seats")
-                        .HasForeignKey("UserSeatsId");
-
                     b.Navigation("Show");
                 });
 
@@ -319,33 +285,6 @@ namespace BookMyShow.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("BookMyShow.Models.UserSeats", b =>
-                {
-                    b.HasOne("BookMyShow.Models.Cinema", "Cinema")
-                        .WithMany()
-                        .HasForeignKey("CinemaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookMyShow.Models.Movie", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookMyShow.Models.Show", "Show")
-                        .WithMany()
-                        .HasForeignKey("ShowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cinema");
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("Show");
-                });
-
             modelBuilder.Entity("BookMyShow.Models.Cinema", b =>
                 {
                     b.Navigation("Shows");
@@ -361,11 +300,6 @@ namespace BookMyShow.Migrations
                     b.Navigation("Address");
 
                     b.Navigation("PersonalDetails");
-                });
-
-            modelBuilder.Entity("BookMyShow.Models.UserSeats", b =>
-                {
-                    b.Navigation("Seats");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,6 +11,7 @@ namespace BookMyShow.DTO
 
     public class ColumnsDto
     {
+        public int Id { get; set; }
         public int Column { get; set; }
         public SeatStatus SeatStatus { get; set; }
         public SeatType SeatType { get; set; }
