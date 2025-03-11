@@ -5,11 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using BookMyShow.Data;
 using BookMyShow.Repository.Interfaces;
 using BookMyShow.Repository.Services;
+using BookMyShow.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.AddHttpClient<PayPalService>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddScoped<IAuthRepository,AuthRepository>();
 builder.Services.AddScoped<ICinemaRepository, CinemaRepository>();
@@ -72,6 +74,8 @@ builder.Services.AddCors(options =>
 //builder.Services.AddControllersWithViews();
 //builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
