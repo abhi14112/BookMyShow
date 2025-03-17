@@ -67,7 +67,6 @@ namespace BookMyShow.Services
             var response = await _httpClient.PostAsync($"{_paypalUrl}/v2/checkout/orders", requestContext);
             response.EnsureSuccessStatusCode();
             return JsonNode.Parse(await response.Content.ReadAsStringAsync());
-
         }
         public async Task<JsonNode?> CaptureOrder(string orderId)
         {
@@ -78,11 +77,9 @@ namespace BookMyShow.Services
             {
                 Content = new StringContent("{}", Encoding.UTF8, "application/json") 
             };
-
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
             return JsonNode.Parse(await response.Content.ReadAsStringAsync());
         }
-
     }
 }

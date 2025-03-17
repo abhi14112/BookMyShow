@@ -1,7 +1,6 @@
 ﻿using BookMyShow.DTO;
 using BookMyShow.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-
 namespace BookMyShow.Controllers
 {
     [Route("api/[controller]")]
@@ -28,8 +27,8 @@ namespace BookMyShow.Controllers
         [HttpPost("BookSeats")]
         public async Task<IActionResult> BookSeats([FromBody]SeatIdDto ids)
         {
-            await _cinemaService.BookSeats(ids);
-            return Ok("Seats booked");
+            var bookingId = await _cinemaService.BookSeats(ids,ids.amount);
+            return Ok(new { bookingId });
         }
         [HttpGet("GetShowDetails/{id}")]
         public async Task<IActionResult>GetShowDetails(int id)
@@ -77,7 +76,6 @@ namespace BookMyShow.Controllers
                 return StatusCode(500, new { error = "Internal Server Error", details = ex.Message });
             }
         }
-
         [HttpPost("AddCinema/{id}")]
         public async Task<IActionResult>AddCinema( [FromBody]AddCinemaDto cinema, int id)
         {

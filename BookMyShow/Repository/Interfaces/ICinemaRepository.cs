@@ -10,7 +10,7 @@ namespace BookMyShow.Repository.Interfaces
         Task<List<AdminShowDto>> GetAdminShows(int id);
         Task<ShowDetailsDto> GetShowDetails(int id);
         Task AddShowData(AddShowDto show, int id);
-        Task BookSeats(SeatIdDto ids);
+        Task<int> BookSeats(SeatIdDto ids,decimal amount);
         Task<List<BookingDto>> GetBooking(int id);
         Task<List<BookingDto>> GetAllBooking();
     }

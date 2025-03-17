@@ -3,7 +3,6 @@ using BookMyShow.Models;
 using BookMyShow.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace BookMyShow.Controllers
 {
     [Route("api/[controller]")]

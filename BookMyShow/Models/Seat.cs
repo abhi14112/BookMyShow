@@ -15,8 +15,9 @@ namespace BookMyShow.Models
     }
     public enum SeatStatus
     {
-        AVAILABLE,
-        BOOKED
+        AVAILABLE = 0,
+        BOOKED = 1,
+        InProgress = 2
     }
     public enum SeatType
     {

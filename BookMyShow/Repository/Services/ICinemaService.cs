@@ -13,7 +13,6 @@ namespace BookMyShow.Repository.Services
         {
             _context = context;
         }
-
         public async Task<List<BookingDto>> GetAllBooking()
         {
             var userBookings = await _context.Bookings
@@ -21,6 +20,8 @@ namespace BookMyShow.Repository.Services
                 {
                     Id = b.Id,
                     BookingTime = b.BookingTime,
+                    Status = b.Status,
+                    Amount = b.Amount,
                     Show = new BookingShowDto
                     {
                         Id = b.Show.Id,
@@ -39,9 +40,9 @@ namespace BookMyShow.Repository.Services
                     }).ToList()
                 })
                 .ToListAsync(); 
-
             return userBookings;
-        }public async Task<List<BookingDto>> GetBooking(int userId)
+        }
+        public async Task<List<BookingDto>> GetBooking(int userId)
         {
             var userBookings = await _context.Bookings
                 .Where(b => b.UserId == userId)
@@ -49,6 +50,8 @@ namespace BookMyShow.Repository.Services
                 {
                     Id = b.Id,
                     BookingTime = b.BookingTime,
+                    Amount = b.Amount,
+                    Status = b.Status,
                     Show = new BookingShowDto
                     {
                         Id = b.Show.Id,
@@ -104,7 +107,6 @@ namespace BookMyShow.Repository.Services
                     StartDate = show.StartDate,
                     EndDate = show.EndDate
                 };
-
                 _context.Shows.Add(showData);
                 await _context.SaveChangesAsync();
 
@@ -208,27 +210,42 @@ namespace BookMyShow.Repository.Services
                 }).ToListAsync();
             return shows;
         }
-         
-        public async Task BookSeats(SeatIdDto data)
+        public async Task<int> BookSeats(SeatIdDto data,decimal amount)
         {
-            var seats = _context.Seats.Where(s => data.Ids.Contains(s.Id)).ToList();
-            foreach(var seat in seats)
+            try
             {
-                seat.SeatStatus = (SeatStatus)1;
-            }
-            var booking = new Booking
-            {
-                UserId = data.UserId,
-                ShowId = data.ShowId,
-                CinemaId = data.CinemaId,
-                BookingTime = DateTime.UtcNow,
-                BookingSeats = data.Ids.Select(seatId => new BookingSeat
+                var seats = _context.Seats.Where(s => data.Ids.Contains(s.Id)).ToList();
+
+                foreach (var seat in seats)
                 {
-                    SeatId = seatId,
-                }).ToList()
-            };
-            _context.Bookings.Add(booking);
-            await _context.SaveChangesAsync();
+                    seat.SeatStatus = (SeatStatus)1;
+                }
+
+                var booking = new Booking
+                {
+                    UserId = data.UserId,
+                    Amount = amount,
+                    ShowId = data.ShowId,
+                    CinemaId = data.CinemaId,
+                    BookingTime = DateTime.UtcNow,
+                    Status = "InProgress",
+                    BookingSeats = data.Ids.Select(seatId => new BookingSeat
+                    {
+                        SeatId = seatId,
+                    }).ToList()
+                };
+
+                _context.Bookings.Add(booking);
+                await _context.SaveChangesAsync();
+                return booking.Id;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException?.Message); // MOST IMPORTANT
+                throw;
+            }
         }
+
     }
 }

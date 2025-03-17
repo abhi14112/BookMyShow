@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
         public DateTime BookingTime { get; set; }
+        public string Status { get; set; }
+        public decimal Amount { get; set; }
         public BookingShowDto Show { get; set; }
         public BookingCinemaDto Cinema { get; set; }
         public List<BookingSeatDto> Seats { get; set; }
