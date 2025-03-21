@@ -74,7 +74,7 @@ public class CheckoutController : ControllerBase
     {
         public decimal Amount { get; set; }
         public string Currency { get; set; } = "USD";
-        public string ReturnUrl { get; set; } = "https://your-frontend.com/success";
-        public string CancelUrl { get; set; } = "https://your-frontend.com/cancel";
+        public string ReturnUrl { get; set; } = "http://localhost:5173/success";
+        public string CancelUrl { get; set; } = "http://localhost:5173/cancel";
     }
 }

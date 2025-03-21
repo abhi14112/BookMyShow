@@ -67,8 +67,10 @@ namespace BookMyShow.Repository.Services
                     {
                         Id = bs.Seat.Id,
                         SeatNumber = bs.Seat.Row + bs.Seat.Columns
-                    }).ToList()
+                    })
+                    .ToList()
                 })
+                .OrderByDescending(b=>b.BookingTime)
                 .ToListAsync(); 
 
             return userBookings;
@@ -218,7 +220,7 @@ namespace BookMyShow.Repository.Services
 
                 foreach (var seat in seats)
                 {
-                    seat.SeatStatus = (SeatStatus)1;
+                    seat.SeatStatus = (SeatStatus)2;
                 }
 
                 var booking = new Booking
@@ -227,14 +229,13 @@ namespace BookMyShow.Repository.Services
                     Amount = amount,
                     ShowId = data.ShowId,
                     CinemaId = data.CinemaId,
-                    BookingTime = DateTime.UtcNow,
+                    BookingTime = DateTime.Now,
                     Status = "InProgress",
                     BookingSeats = data.Ids.Select(seatId => new BookingSeat
                     {
                         SeatId = seatId,
                     }).ToList()
                 };
-
                 _context.Bookings.Add(booking);
                 await _context.SaveChangesAsync();
                 return booking.Id;

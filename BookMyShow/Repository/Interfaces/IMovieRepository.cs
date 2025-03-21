@@ -7,5 +7,6 @@ namespace BookMyShow.Repository.Interfaces
     {
         Task<MovieDto> AddMovie(MovieDto movie);
         Task<IEnumerable<Movie>> GetAll();
+
     }
 }
